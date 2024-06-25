@@ -13,7 +13,7 @@ class PickUpCallPage extends StatefulWidget {
   final String? uid;
   final Widget child;
 
-  const PickUpCallPage({Key? key, required this.child, this.uid}) : super(key: key);
+  const PickUpCallPage({super.key, required this.child, this.uid});
 
   @override
   State<PickUpCallPage> createState() => _PickUpCallPageState();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import '../../../features/chat/domain/entities/message_entity.dart';
 import '../../../features/user/presentation/cubit/get_single_user/get_single_user_cubit.dart';
 import '../../../features/user/presentation/cubit/user/user_cubit.dart';
 import '../../routing/routes.dart';
@@ -21,8 +21,8 @@ class _ContactsPageState extends State<ContactsPage> {
 
   @override
   void initState() {
-    BlocProvider.of<UserCubit>(context).getAllUsers();
-    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
+    /*BlocProvider.of<UserCubit>(context).getAllUsers();
+    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);*/
     super.initState();
   }
 
@@ -40,7 +40,7 @@ class _ContactsPageState extends State<ContactsPage> {
             return BlocBuilder<UserCubit, UserState>(
               builder: (context, state) {
                 if (state is UserLoaded) {
-                  final contacts = state.users.where((user) => user?.uid != widget.uid).toList();
+                  final contacts = state.users.where((user) => user.uid != widget.uid).toList();
 
 
                   if (contacts.isEmpty) {
@@ -53,7 +53,7 @@ class _ContactsPageState extends State<ContactsPage> {
                     final contact = contacts[index];
                     return ListTile(
                       onTap: () {
-                     /*   Navigator.pushNamed(context, Routes.singleChatPage,
+                        Navigator.pushNamed(context, Routes.singleChatPage,
                             arguments: MessageEntity(
                               senderUid: currentUser.uid,
                               recipientUid: contact.uid,
@@ -62,7 +62,7 @@ class _ContactsPageState extends State<ContactsPage> {
                               senderProfile: currentUser.profileUrl,
                               recipientProfile: contact.profileUrl,
                               uid: widget.uid
-                            ));*/
+                            ));
                       },
                       leading: SizedBox(
                         width: 50,
@@ -99,40 +99,3 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 }
 
-// FIXME: Logic to fetch contacts of the phone
-
-// BlocBuilder<GetDeviceNumberCubit, GetDeviceNumberState>(
-// builder: (context, state) {
-// if(state is GetDeviceNumberLoaded) {
-// final contacts = state.contacts;
-// return ListView.builder(itemCount: contacts.length, itemBuilder: (context, index) {
-// final contact = contacts[index];
-// return ListTile(
-// leading: SizedBox(
-// width: 50,
-// height: 50,
-// child: ClipRRect(
-// borderRadius: BorderRadius.circular(25),
-// child: Image.memory(
-// contact.photo ?? Uint8List(0),
-// errorBuilder: (context, error, stackTrace) {
-// return Image.asset('assets/profile_default.png'); // Placeholder image
-// },
-// ),
-//
-// //profileWidget()
-// ),
-// ),
-// title: Text("${contact.name!.first} ${contact.name!.last}"),
-// subtitle: const Text("Hey there! I'm using WhatsApp"),
-// );
-// });
-//
-// }
-// return const Center(
-// child: CircularProgressIndicator(
-// color: tabColor,
-// ),
-// );
-// },
-// ),

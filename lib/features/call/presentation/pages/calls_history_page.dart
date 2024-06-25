@@ -9,8 +9,7 @@ import '../cubits/my_call_history/my_call_history_cubit.dart';
 
 class CallHistoryPage extends StatelessWidget {
   final UserEntity currentUser;
-  const CallHistoryPage({Key? key, required this.currentUser})
-      : super(key: key);
+  const CallHistoryPage({super.key, required this.currentUser});
 
   @override
   Widget build(BuildContext context) {

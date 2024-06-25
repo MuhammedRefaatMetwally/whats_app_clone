@@ -20,6 +20,7 @@ class Routes {
 
   // * Chat Pages
   static const String singleChatPage = "singleChatPage";
+  static const String chatPage = "chatPage";
 
   // * My Status Page
   static const String myStatusPage = "myStatusPage";

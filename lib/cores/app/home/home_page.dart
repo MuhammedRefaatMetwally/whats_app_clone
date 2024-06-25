@@ -5,7 +5,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as path;
+import 'package:whats_app_clone/features/chat/presentation/cubit/chat/chat_cubit.dart';
 
+import '../../../features/call/presentation/cubits/my_call_history/my_call_history_cubit.dart';
+import '../../../features/call/presentation/pages/calls_history_page.dart';
+import '../../../features/chat/presentation/pages/chat_page.dart';
 import '../../../features/user/domain/entities/user_entity.dart';
 import '../../../features/user/presentation/cubit/get_single_user/get_single_user_cubit.dart';
 import '../../../features/user/presentation/cubit/user/user_cubit.dart';
@@ -13,7 +17,7 @@ import '../../routing/routes.dart';
 import '../../storage/storage_provider.dart';
 import '../global/widgets/show_image_and_video_widget.dart';
 import '../theme/style.dart';
-
+import 'package:whats_app_clone/main_injection_container.dart' as di;
 
 class HomePage extends StatefulWidget {
   final String uid;
@@ -25,15 +29,15 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
-
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   TabController? _tabController;
   int _currentTabIndex = 0;
 
   @override
   void initState() {
-    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
-    //BlocProvider.of<MyCallHistoryCubit>(context).getMyCallHistory(uid: widget.uid);
+    /*BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
+    BlocProvider.of<MyCallHistoryCubit>(context).getMyCallHistory(uid: widget.uid);*/
 
     WidgetsBinding.instance.addObserver(this);
     _tabController = TabController(length: 3, vsync: this);
@@ -65,31 +69,22 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
-        BlocProvider.of<UserCubit>(context).updateUser(
-            user: UserEntity(
-                uid: widget.uid,
-                isOnline: true
-            )
-        );
+        BlocProvider.of<UserCubit>(context)
+            .updateUser(user: UserEntity(uid: widget.uid, isOnline: true));
         break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
       case AppLifecycleState.paused:
-        BlocProvider.of<UserCubit>(context).updateUser(
-            user: UserEntity(
-                uid: widget.uid,
-                isOnline: false
-            )
-        );
+        BlocProvider.of<UserCubit>(context)
+            .updateUser(user: UserEntity(uid: widget.uid, isOnline: false));
         break;
       case AppLifecycleState.hidden:
-      // TODO: Handle this case.
+        // TODO: Handle this case.
         break;
     }
   }
 
- // List<StatusImageEntity> _stories = [];
-
+  //List<StatusImageEntity> _stories = [];
 
   List<File>? _selectedMedia;
   List<String>? _mediaTypes; // To store the type of each selected file
@@ -113,12 +108,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
         // Determine the type of each selected file
         for (int i = 0; i < _selectedMedia!.length; i++) {
-          String extension = path.extension(_selectedMedia![i].path)
-              .toLowerCase();
-          if (extension == '.jpg' || extension == '.jpeg' ||
+          String extension =
+              path.extension(_selectedMedia![i].path).toLowerCase();
+          if (extension == '.jpg' ||
+              extension == '.jpeg' ||
               extension == '.png') {
             _mediaTypes![i] = 'image';
-          } else if (extension == '.mp4' || extension == '.mov' ||
+          } else if (extension == '.mp4' ||
+              extension == '.mov' ||
               extension == '.avi') {
             _mediaTypes![i] = 'video';
           }
@@ -138,7 +135,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return BlocBuilder<GetSingleUserCubit, GetSingleUserState>(
       builder: (context, state) {
-        if(state is GetSingleUserLoaded) {
+        if (state is GetSingleUserLoaded) {
           final currentUser = state.singleUser;
           return Scaffold(
             appBar: AppBar(
@@ -173,14 +170,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       color: appBarColor,
                       iconSize: 28,
                       onSelected: (value) {},
-                      itemBuilder: (context) =>
-                      <PopupMenuEntry<String>>[
+                      itemBuilder: (context) => <PopupMenuEntry<String>>[
                         PopupMenuItem<String>(
                           value: "Settings",
                           child: GestureDetector(
                               onTap: () {
                                 Navigator.pushNamed(
-                                    context, Routes.settingsPage, arguments: widget.uid);
+                                    context, Routes.settingsPage,
+                                    arguments: widget.uid);
                               },
                               child: const Text('Settings')),
                         ),
@@ -198,41 +195,42 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   Tab(
                     child: Text(
                       "Chats",
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ),
                   Tab(
                     child: Text(
                       "Status",
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ),
                   Tab(
                     child: Text(
                       "Calls",
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
-
               ),
             ),
             floatingActionButton: switchFloatingActionButtonOnTabIndex(
                 _currentTabIndex, currentUser),
             body: TabBarView(
               controller: _tabController,
-
-              children: const [
-                /*ChatPage(uid: widget.uid),
-                StatusPage(currentUser: currentUser),
-                CallHistoryPage(currentUser: currentUser,),*/
+              children: [
+                BlocProvider(
+                    create: (context) => di.sl<ChatCubit>(),
+                    child: ChatPage(uid: widget.uid)),
+                //StatusPage(currentUser: currentUser),
+                CallHistoryPage(
+                  currentUser: currentUser,
+                ),
               ],
             ),
           );
-
         }
         return const Center(
           child: CircularProgressIndicator(
@@ -250,8 +248,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           return FloatingActionButton(
             backgroundColor: tabColor,
             onPressed: () {
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => const ContactsPage()));
-              Navigator.pushNamed(context, Routes.contactUsersPage, arguments: widget.uid);
+              Navigator.pushNamed(context, Routes.contactUsersPage,
+                  arguments: widget.uid);
             },
             child: const Icon(
               Icons.message,
@@ -265,7 +263,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             backgroundColor: tabColor,
             onPressed: () {
               selectMedia().then(
-                    (value) {
+                (value) {
                   if (_selectedMedia != null && _selectedMedia!.isNotEmpty) {
                     showModalBottomSheet(
                       isScrollControlled: true,
@@ -276,7 +274,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         return ShowMultiImageAndVideoPickedWidget(
                           selectedFiles: _selectedMedia!,
                           onTap: () {
-                           // _uploadImageStatus(currentUser);
+                            // _uploadImageStatus(currentUser);
                             Navigator.pop(context);
                           },
                         );
@@ -319,17 +317,17 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     }
   }
 
-  /*_uploadImageStatus(UserEntity currentUser) {
+/*_uploadImageStatus(UserEntity currentUser) {
     StorageProviderRemoteDataSource.uploadStatuses(
         files: _selectedMedia!,
         onComplete: (onCompleteStatusUpload) {}
     ).then((statusImageUrls) {
       for (var i = 0; i < statusImageUrls.length; i++) {
-        _stories.add(*//*StatusImageEntity(
+        _stories.add(*/ /*StatusImageEntity(
           url: statusImageUrls[i],
           type: _mediaTypes![i],
           viewers: const [],
-        )*//*);
+        )*/ /*);
       }
 
       di.sl<GetMyStatusFutureUseCase>().call(widget.uid).then((myStatus) {
@@ -363,5 +361,4 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       });
     });
   }*/
-
 }

@@ -1,15 +1,13 @@
 import 'dart:io';
 import 'package:agora_uikit/agora_uikit.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:swipe_to/swipe_to.dart';
-
+import 'package:whats_app_clone/features/chat/presentation/widgets/attach_window_item.dart';
+import 'package:whats_app_clone/features/chat/presentation/widgets/message_layout.dart';
 import '../../../../cores/app/const/app_const.dart';
 import '../../../../cores/app/const/message_type_const.dart';
 import '../../../../cores/app/global/widgets/dialog_widget.dart';
@@ -25,8 +23,7 @@ import '../../domain/entities/message_reply_entity.dart';
 import '../cubit/message/message_cubit.dart';
 import '../widgets/chat_utils.dart';
 import '../widgets/message_widgets/message_replay_preview_widget.dart';
-import '../widgets/message_widgets/message_replay_type_widget.dart';
-import '../widgets/message_widgets/message_type_widget.dart';
+
 
 
 class SingleChatPage extends StatefulWidget {
@@ -90,12 +87,12 @@ class _SingleChatPageState extends State<SingleChatPage> {
   void initState() {
     _soundRecorder = FlutterSoundRecorder();
     _openAudioRecording();
-    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.message.recipientUid!);
+   /* BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.message.recipientUid!);
 
     BlocProvider.of<MessageCubit>(context).getMessages(message: MessageEntity(
       senderUid: widget.message.senderUid,
       recipientUid: widget.message.recipientUid
-    ));
+    ));*/
 
     super.initState();
   }
@@ -155,7 +152,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
         }
       });
     } catch (e) {
-      toast("some error occured $e");
+      toast("some error occurred $e");
     }
   }
 
@@ -179,7 +176,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
 
     final provider = BlocProvider.of<MessageCubit>(context);
 
-    bool _isReplying = provider.messageReplay.message != null;
+    bool isReplying = provider.messageReplay.message != null;
 
     return PickUpCallPage(
       uid: widget.message.senderUid,
@@ -278,7 +275,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
                               }
 
                               if(message.senderUid == widget.message.senderUid) {
-                                return _messageLayout(
+                                return MessageLayout(
                                   messageType: message.messageType,
                                   message: message.message,
                                   alignment: Alignment.centerRight,
@@ -317,10 +314,10 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                     );
 
                                     setState(() {});
-                                  }
+                                  }, reciepentName: widget.message.recipientName!,
                                 );
                               } else {
-                                return _messageLayout(
+                                return MessageLayout(
                                   messageType: message.messageType,
                                   message: message.message,
                                   alignment: Alignment.centerLeft,
@@ -359,7 +356,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                     );
 
                                     setState(() {});
-                                  },
+                                  }, reciepentName: widget.message.recipientName!,
                                 );
                               }
                             },
@@ -368,7 +365,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
 
 
 
-                        _isReplying == true
+                        isReplying == true
                             ? const SizedBox(
                           height: 5,
                         )
@@ -376,7 +373,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
                           height: 0,
                         ),
 
-                        _isReplying == true
+                        isReplying == true
                             ? Row(
                           children: [
                             Expanded(
@@ -396,13 +393,13 @@ class _SingleChatPageState extends State<SingleChatPage> {
                             : Container(),
 
                         Container(
-                          margin: EdgeInsets.only(left: 10, right: 10, top: _isReplying == true ? 0 : 5, bottom: 5),
+                          margin: EdgeInsets.only(left: 10, right: 10, top: isReplying == true ? 0 : 5, bottom: 5),
                           child: Row(
                             children: [
                               Expanded(
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 5),
-                                  decoration: BoxDecoration(color: appBarColor, borderRadius: _isReplying == true
+                                  decoration: BoxDecoration(color: appBarColor, borderRadius: isReplying == true
                                       ? const BorderRadius.only(
                                       bottomLeft: Radius.circular(25),
                                       bottomRight:
@@ -635,28 +632,28 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      _attachWindowItem(
+                                      const AttachWindowItem(
                                         icon: Icons.document_scanner,
                                         color: Colors.deepPurpleAccent,
                                         title: "Document",
                                       ),
-                                      _attachWindowItem(
+                                      AttachWindowItem(
                                           icon: Icons.camera_alt,
                                           color: Colors.pinkAccent,
                                           title: "Camera",
                                           onTap: () {}),
-                                      _attachWindowItem(icon: Icons.image, color: Colors.purpleAccent, title: "Gallery"),
+                                      const AttachWindowItem(icon: Icons.image, color: Colors.purpleAccent, title: "Gallery"),
                                     ],
                                   ),
                                   const SizedBox(
                                     height: 20,
                                   ),
-                                  Row(
+                                  const Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      _attachWindowItem(icon: Icons.headphones, color: Colors.deepOrange, title: "Audio"),
-                                      _attachWindowItem(icon: Icons.location_on, color: Colors.green, title: "Location"),
-                                      _attachWindowItem(
+                                      AttachWindowItem(icon: Icons.headphones, color: Colors.deepOrange, title: "Audio"),
+                                      AttachWindowItem(icon: Icons.location_on, color: Colors.green, title: "Location"),
+                                      AttachWindowItem(
                                           icon: Icons.account_circle, color: Colors.deepPurpleAccent, title: "Contact"),
                                     ],
                                   ),
@@ -666,19 +663,19 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      _attachWindowItem(
+                                      const AttachWindowItem(
                                         icon: Icons.bar_chart,
                                         color: tabColor,
                                         title: "Poll",
                                       ),
-                                      _attachWindowItem(
+                                      AttachWindowItem(
                                           icon: Icons.gif_box_outlined,
                                           color: Colors.indigoAccent,
                                           title: "Gif",
                                           onTap: () {
                                             _sendGifMessage();
                                           }),
-                                      _attachWindowItem(
+                                      AttachWindowItem(
                                           icon: Icons.videocam_rounded,
                                           color: Colors.lightGreen,
                                           title: "Video",
@@ -728,154 +725,8 @@ class _SingleChatPageState extends State<SingleChatPage> {
     );
   }
 
-  _messageLayout({
-    Color? messageBgColor,
-    Alignment? alignment,
-    Timestamp? createAt,
-    Function(DragUpdateDetails)?  onSwipe,
-    String? message,
-    String? messageType,
-    bool? isShowTick,
-    bool? isSeen,
-    VoidCallback? onLongPress,
-    MessageReplayEntity? reply,
-    double? rightPadding
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      child: SwipeTo(
-        onRightSwipe: onSwipe,
-        child: GestureDetector(
-          onLongPress: onLongPress,
-          child: Container(
-            alignment: alignment,
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      padding: EdgeInsets.only(left: 5, right: messageType == MessageTypeConst.textMessage ? rightPadding! : 5, top: 5, bottom: 5),
-                      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.80),
-                      decoration: BoxDecoration(color: messageBgColor, borderRadius: BorderRadius.circular(8)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
 
-                          reply?.message == null || reply?.message == ""
-                              ? const SizedBox() :Container(
-                            height: reply!.messageType ==
-                                MessageTypeConst.textMessage ? 70 : 80,
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(.2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: double.infinity,
-                                  width: 4.5,
-                                  decoration: BoxDecoration(
-                                      color: reply.username == widget.message.recipientName ? Colors.deepPurpleAccent
-                                          : tabColor,
-                                      borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(15),
-                                          bottomLeft:
-                                          Radius.circular(15))),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5.0, vertical: 5),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "${reply.username == widget.message.recipientName ? reply.username : "You"}",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: reply.username == widget.message.recipientName
-                                                  ? Colors.deepPurpleAccent
-                                                  : tabColor
-                                          ),
-                                        ),
-                                        MessageReplayTypeWidget(
-                                          message: reply.message,
-                                          type: reply.messageType,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 3,
-                          ),
 
-                          MessageTypeWidget(
-                            message: message,
-                            type: messageType,
-                          ),
-                        ],
-                      )
-                    ),
-                    const SizedBox(height: 3),
-                  ],
-                ),
-                Positioned(
-                  bottom: 4,
-                  right: 10,
-                  child: Row(
-                    children: [
-                      Text(DateFormat.jm().format(createAt!.toDate()),
-                          style: const TextStyle(fontSize: 12, color: greyColor)),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      isShowTick == true
-                          ? Icon(
-                              isSeen == true ? Icons.done_all : Icons.done,
-                              size: 16,
-                              color: isSeen == true ? Colors.blue : greyColor,
-                            )
-                          : Container()
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  _attachWindowItem({IconData? icon, Color? color, String? title, VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 55,
-            height: 55,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(40), color: color),
-            child: Icon(icon),
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Text(
-            "$title",
-            style: const TextStyle(color: greyColor, fontSize: 13),
-          ),
-        ],
-      ),
-    );
-  }
 
 
   _sendTextMessage() async {

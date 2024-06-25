@@ -8,7 +8,7 @@ import '../cubits/call/call_cubit.dart';
 
 class CallPage extends StatefulWidget {
   final CallEntity callEntity;
-  const CallPage({Key? key, required this.callEntity}) : super(key: key);
+  const CallPage({super.key, required this.callEntity});
 
   @override
   State<CallPage> createState() => _CallPageState();

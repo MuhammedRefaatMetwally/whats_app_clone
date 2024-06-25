@@ -36,43 +36,43 @@ class _ChatPageState extends State<ChatPage> {
                 return const Center(
                   child: Text("No Conversation Yet"),
                 );
-              }
+              }else{
+                return ListView.builder(itemCount: myChat.length, itemBuilder: (context, index) {
 
-              return ListView.builder(itemCount: myChat.length, itemBuilder: (context, index) {
-
-                final chat = myChat[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, Routes.singleChatPage,
-                        arguments: MessageEntity(
-                          senderUid: chat.senderUid,
-                          recipientUid:chat.recipientUid,
-                          senderName: chat.senderName,
-                          recipientName: chat.recipientName,
-                          senderProfile: chat.senderProfile,
-                          recipientProfile: chat.recipientProfile,
-                          uid: widget.uid
-                    ));
-                  },
-                  child: ListTile(
-                    leading: SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child: const ProfileWidget(),
+                  final chat = myChat[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, Routes.singleChatPage,
+                          arguments: MessageEntity(
+                              senderUid: chat.senderUid,
+                              recipientUid:chat.recipientUid,
+                              senderName: chat.senderName,
+                              recipientName: chat.recipientName,
+                              senderProfile: chat.senderProfile,
+                              recipientProfile: chat.recipientProfile,
+                              uid: widget.uid
+                          ));
+                    },
+                    child: ListTile(
+                      leading: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: const ProfileWidget(),
+                        ),
+                      ),
+                      title: Text("${chat.recipientName}"),
+                      subtitle: Text("${chat.recentTextMessage}", maxLines: 1, overflow: TextOverflow.ellipsis,),
+                      trailing: Text(
+                        DateFormat.jm().format(chat.createdAt!.toDate()),
+                        style: const TextStyle(color: greyColor, fontSize: 13),
                       ),
                     ),
-                    title: Text("${chat.recipientName}"),
-                    subtitle: Text("${chat.recentTextMessage}", maxLines: 1, overflow: TextOverflow.ellipsis,),
-                    trailing: Text(
-                      DateFormat.jm().format(chat.createdAt!.toDate()),
-                      style: const TextStyle(color: greyColor, fontSize: 13),
-                    ),
-                  ),
-                );
-              });
+                  );
+                });
 
+              }
             }
             return const Center(
               child: CircularProgressIndicator(

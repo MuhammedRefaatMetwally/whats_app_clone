@@ -23,7 +23,7 @@ Future<GiphyGif?> pickGIF(BuildContext context) async {
   try {
     gif = await GiphyPicker.pickGif(
         context: context,
-        apiKey: 'kLu4PIKAwS2ys47Ji7oWUIr2iZbEoj1k');
+        apiKey: 'Mrbgpy7KDqilcKlmjWyWGFGF0mHzMfc7');
 
   } catch (e) {
     toast(e.toString());
