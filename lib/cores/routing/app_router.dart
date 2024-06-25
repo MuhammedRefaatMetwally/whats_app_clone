@@ -12,6 +12,7 @@ import '../../features/chat/domain/entities/chat_entity.dart';
 import '../../features/chat/domain/entities/message_entity.dart';
 import '../../features/chat/presentation/pages/single_chat_page.dart';
 import '../../features/status/domain/entities/status_entity.dart';
+import '../../features/status/presentation/cubit/status/status_cubit.dart';
 import '../../features/status/presentation/pages/my_status_page.dart';
 import '../../features/user/domain/entities/user_entity.dart';
 import '../../features/user/presentation/cubit/auth/auth_cubit.dart';
@@ -161,7 +162,10 @@ class AuthWrapper extends StatelessWidget {
             BlocProvider(
               create: (context) => di.sl<MyCallHistoryCubit>()
                 ..getMyCallHistory(uid: authState.uid),
+            ),BlocProvider(
+              create: (context) => di.sl<StatusCubit>(),
             ),
+
           ], child: HomePage(uid: authState.uid));
         }
         return SplashScreen();
@@ -175,7 +179,7 @@ dynamic materialPageBuilder(Widget child) {
 }
 
 class ErrorPage extends StatelessWidget {
-  const ErrorPage({Key? key}) : super(key: key);
+  const ErrorPage({super.key});
 
   @override
   Widget build(BuildContext context) {

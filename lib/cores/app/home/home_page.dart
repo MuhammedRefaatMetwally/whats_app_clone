@@ -6,10 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as path;
 import 'package:whats_app_clone/features/chat/presentation/cubit/chat/chat_cubit.dart';
-
-import '../../../features/call/presentation/cubits/my_call_history/my_call_history_cubit.dart';
+import 'package:whats_app_clone/features/status/presentation/cubit/get_my_status/get_my_status_cubit.dart';
 import '../../../features/call/presentation/pages/calls_history_page.dart';
 import '../../../features/chat/presentation/pages/chat_page.dart';
+import '../../../features/status/domain/entities/status_entity.dart';
+import '../../../features/status/domain/entities/status_image_entity.dart';
+import '../../../features/status/domain/usecases/get_my_status_future_usecase.dart';
+import '../../../features/status/presentation/cubit/status/status_cubit.dart';
+import '../../../features/status/presentation/pages/status_page.dart';
 import '../../../features/user/domain/entities/user_entity.dart';
 import '../../../features/user/presentation/cubit/get_single_user/get_single_user_cubit.dart';
 import '../../../features/user/presentation/cubit/user/user_cubit.dart';
@@ -84,7 +88,7 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  //List<StatusImageEntity> _stories = [];
+  List<StatusImageEntity> _stories = [];
 
   List<File>? _selectedMedia;
   List<String>? _mediaTypes; // To store the type of each selected file
@@ -224,7 +228,9 @@ class _HomePageState extends State<HomePage>
                 BlocProvider(
                     create: (context) => di.sl<ChatCubit>(),
                     child: ChatPage(uid: widget.uid)),
-                //StatusPage(currentUser: currentUser),
+                BlocProvider(
+                    create: (context) => di.sl<GetMyStatusCubit>(),
+                    child: StatusPage(currentUser: currentUser)),
                 CallHistoryPage(
                   currentUser: currentUser,
                 ),
@@ -274,7 +280,7 @@ class _HomePageState extends State<HomePage>
                         return ShowMultiImageAndVideoPickedWidget(
                           selectedFiles: _selectedMedia!,
                           onTap: () {
-                            // _uploadImageStatus(currentUser);
+                            _uploadImageStatus(currentUser);
                             Navigator.pop(context);
                           },
                         );
@@ -317,32 +323,36 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-/*_uploadImageStatus(UserEntity currentUser) {
+  _uploadImageStatus(UserEntity currentUser) {
     StorageProviderRemoteDataSource.uploadStatuses(
-        files: _selectedMedia!,
-        onComplete: (onCompleteStatusUpload) {}
-    ).then((statusImageUrls) {
+            files: _selectedMedia!, onComplete: (onCompleteStatusUpload) {})
+        .then((statusImageUrls) {
       for (var i = 0; i < statusImageUrls.length; i++) {
-        _stories.add(*/ /*StatusImageEntity(
+        _stories.add(StatusImageEntity(
           url: statusImageUrls[i],
           type: _mediaTypes![i],
           viewers: const [],
-        )*/ /*);
+        ));
       }
 
       di.sl<GetMyStatusFutureUseCase>().call(widget.uid).then((myStatus) {
         if (myStatus.isNotEmpty) {
-          BlocProvider.of<StatusCubit>(context).updateOnlyImageStatus(
-              status: StatusEntity(
-                  statusId: myStatus.first.statusId,
-                  stories: _stories
-              )
-          ).then((value) {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>
-                HomePage(uid: widget.uid, index: 1,)));
+          BlocProvider.of<StatusCubit>(context)
+              .updateOnlyImageStatus(
+                  status: StatusEntity(
+                      statusId: myStatus.first.statusId, stories: _stories))
+              .then((value) {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => HomePage(
+                          uid: widget.uid,
+                          index: 1,
+                        )));
           });
         } else {
-          BlocProvider.of<StatusCubit>(context).createStatus(
+          BlocProvider.of<StatusCubit>(context)
+              .createStatus(
             status: StatusEntity(
                 caption: "",
                 createdAt: Timestamp.now(),
@@ -351,14 +361,19 @@ class _HomePageState extends State<HomePage>
                 uid: currentUser.uid,
                 profileUrl: currentUser.profileUrl,
                 imageUrl: statusImageUrls[0],
-                phoneNumber: currentUser.phoneNumber
-            ),
-          ).then((value) {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>
-                HomePage(uid: widget.uid, index: 1,)));
+                phoneNumber: currentUser.phoneNumber),
+          )
+              .then((value) {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => HomePage(
+                          uid: widget.uid,
+                          index: 1,
+                        )));
           });
         }
       });
     });
-  }*/
+  }
 }
