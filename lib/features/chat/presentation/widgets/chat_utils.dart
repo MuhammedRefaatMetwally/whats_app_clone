@@ -1,7 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:whats_app_clone/main_injection_container.dart' as di;
+import '../../../../cores/routing/routes.dart';
+import '../../../call/domain/entities/call_entity.dart';
+import '../../../call/domain/usecases/get_call_channel_id_usecase.dart';
+import '../../../call/presentation/cubits/call/call_cubit.dart';
 import '../../domain/entities/chat_entity.dart';
 import '../../domain/entities/message_entity.dart';
 import '../cubit/message/message_cubit.dart';
@@ -57,7 +61,7 @@ class ChatUtils {
           .sl<GetCallChannelIdUseCase>()
           .call(callEntity.callerId!)
           .then((callChannelId) {
-        Navigator.pushNamed(context, PageConst.callPage,
+        Navigator.pushNamed(context, Routes.callPage,
           arguments: CallEntity(
             callId: callChannelId,
             callerId: callEntity.callerId,

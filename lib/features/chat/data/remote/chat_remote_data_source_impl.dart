@@ -209,7 +209,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   @override
-  Stream<List<ChatModel>> getMyChat(ChatEntity chat) {
+  Stream<List<ChatEntity>> getMyChat(ChatEntity chat) {
     final myChatRef = fireStore
         .collection(FirebaseCollectionConst.users)
         .doc(chat.senderUid)

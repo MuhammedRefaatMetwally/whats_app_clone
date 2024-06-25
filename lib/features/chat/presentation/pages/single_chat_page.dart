@@ -17,6 +17,8 @@ import '../../../../cores/app/global/widgets/show_image_picked_widget.dart';
 import '../../../../cores/app/global/widgets/show_video_picked_widget.dart';
 import '../../../../cores/app/theme/style.dart';
 import '../../../../cores/storage/storage_provider.dart';
+import '../../../call/domain/entities/call_entity.dart';
+import '../../../call/presentation/pages/pick_up_call_page.dart';
 import '../../../user/presentation/cubit/get_single_user/get_single_user_cubit.dart';
 import '../../domain/entities/message_entity.dart';
 import '../../domain/entities/message_reply_entity.dart';
@@ -306,7 +308,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                         content: "Are you sure you want to delete this message?"
                                     );
                                   },
-                                  onSwipe: () {
+                                  onSwipe:(right){
                                     onMessageSwipe(
                                         message: message.message,
                                         username: message.senderName,
@@ -315,7 +317,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                     );
 
                                     setState(() {});
-                                  },
+                                  }
                                 );
                               } else {
                                 return _messageLayout(
@@ -348,7 +350,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                         content: "Are you sure you want to delete this message?"
                                     );
                                   },
-                                  onSwipe: () {
+                                  onSwipe: (left) {
                                     onMessageSwipe(
                                         message: message.message,
                                         username: message.senderName,

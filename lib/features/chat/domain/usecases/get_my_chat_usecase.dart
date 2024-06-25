@@ -10,7 +10,7 @@ class GetMyChatUseCase {
 
   GetMyChatUseCase({required this.repository});
 
-  Stream<List<ChatModel>> call(ChatEntity chat)  {
+  Stream<List<ChatEntity>> call(ChatEntity chat)  {
     return repository.getMyChat(chat);
   }
 }

@@ -20,7 +20,7 @@ class ChatRepositoryImpl implements ChatRepository {
   Stream<List<MessageEntity>> getMessages(MessageEntity message) => remoteDataSource.getMessages(message);
 
   @override
-  Stream<List<ChatModel>> getMyChat(ChatEntity chat) => remoteDataSource.getMyChat(chat);
+  Stream<List<ChatEntity>> getMyChat(ChatEntity chat) => remoteDataSource.getMyChat(chat);
   @override
   Future<void> sendMessage(ChatEntity chat, MessageEntity message) async => remoteDataSource.sendMessage(chat, message);
 

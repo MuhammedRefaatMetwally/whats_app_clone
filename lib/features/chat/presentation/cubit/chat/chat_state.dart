@@ -16,7 +16,7 @@ class ChatLoading extends ChatState {
 
 
 class ChatLoaded extends ChatState {
-  final List<ChatModel> chatContacts;
+  final List<ChatEntity> chatContacts;
 
   const ChatLoaded({required this.chatContacts});
   @override
