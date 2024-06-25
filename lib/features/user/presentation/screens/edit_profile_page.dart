@@ -78,7 +78,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           horizontal: 10, vertical: 20),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(75),
-                        child: profileWidget(
+                        child: ProfileWidget(
                             imageUrl: widget.currentUser.profileUrl,
                             image: _image),
                       ),
