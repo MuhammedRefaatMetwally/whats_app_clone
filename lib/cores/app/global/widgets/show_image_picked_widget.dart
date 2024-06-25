@@ -19,7 +19,7 @@ showImagePickedBottomModalSheet(BuildContext context, {File? file, VoidCallback?
           children: [
             SizedBox(
               width: double.infinity,
-              child: profileWidget(
+              child: ProfileWidget(
                 image: file,
               ),
             ),

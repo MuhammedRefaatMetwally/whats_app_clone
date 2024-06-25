@@ -69,7 +69,7 @@ class _ContactsPageState extends State<ContactsPage> {
                         height: 50,
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(25),
-                            child: profileWidget(imageUrl: contact.profileUrl)
+                            child: ProfileWidget(imageUrl: contact.profileUrl)
                         ),
                       ),
                       title: Text("${contact.username}"),

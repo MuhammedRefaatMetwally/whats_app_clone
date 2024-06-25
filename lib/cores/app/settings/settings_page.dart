@@ -49,7 +49,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(32.5),
                             child:
-                            profileWidget(imageUrl: singleUser.profileUrl),
+                            ProfileWidget(imageUrl: singleUser.profileUrl),
                           ),
                         ),
                       ),
@@ -93,7 +93,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(32.5),
                           child:
-                          profileWidget(),
+                          const ProfileWidget(),
                         ),
                       ),
                     ),
