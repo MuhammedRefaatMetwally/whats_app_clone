@@ -1,6 +1,3 @@
-
-
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:giphy_picker/giphy_picker.dart';
@@ -24,10 +21,13 @@ Future<GiphyGif?> pickGIF(BuildContext context) async {
     gif = await GiphyPicker.pickGif(
         context: context,
         apiKey: 'Mrbgpy7KDqilcKlmjWyWGFGF0mHzMfc7');
-
+    if (gif != null) {
+      toast('GIF selected: ${gif.id}');
+    } else {
+      toast('No GIF selected');
+    }
   } catch (e) {
-    toast(e.toString());
+    toast('Failed to pick GIF: ${e.toString()}');
   }
-
   return gif;
 }

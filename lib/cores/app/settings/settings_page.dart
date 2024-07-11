@@ -19,7 +19,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
-    //BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
+    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
     super.initState();
   }
   @override

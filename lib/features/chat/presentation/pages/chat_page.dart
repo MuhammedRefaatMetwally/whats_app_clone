@@ -11,6 +11,7 @@ import '../cubit/chat/chat_cubit.dart';
 
 class ChatPage extends StatefulWidget {
   final String uid;
+
   const ChatPage({super.key, required this.uid});
 
   @override
@@ -31,7 +32,6 @@ class _ChatPageState extends State<ChatPage> {
           builder: (context, state) {
             if(state is ChatLoaded) {
               final myChat = state.chatContacts;
-
               if(myChat.isEmpty) {
                 return const Center(
                   child: Text("No Conversation Yet"),
@@ -59,7 +59,9 @@ class _ChatPageState extends State<ChatPage> {
                         height: 50,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(25),
-                          child: const ProfileWidget(),
+                          child:   ProfileWidget(
+                            imageUrl: chat.recipientProfile,
+                          ),
                         ),
                       ),
                       title: Text("${chat.recipientName}"),

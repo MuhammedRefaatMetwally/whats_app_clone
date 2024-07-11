@@ -2,15 +2,19 @@ import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:whats_app_clone/features/user/presentation/cubit/user/user_cubit.dart';
 import '../../../../cores/app/const/app_const.dart';
 import '../../../../cores/app/home/home_page.dart';
 import '../../../../cores/app/theme/style.dart';
+import '../../../call/presentation/cubits/my_call_history/my_call_history_cubit.dart';
+import '../../../status/presentation/cubit/status/status_cubit.dart';
 import '../cubit/auth/auth_cubit.dart';
 import '../cubit/credential/credential_cubit.dart';
+import '../cubit/get_single_user/get_single_user_cubit.dart';
 import '../widgets/login_body_widget.dart';
 import 'inital_profile_submit_page.dart';
 import 'otp_page.dart';
-
+import 'package:whats_app_clone/main_injection_container.dart' as di;
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -55,7 +59,21 @@ class _LoginPageState extends State<LoginPage> {
           return BlocBuilder<AuthCubit, AuthState>(
             builder: (context, authState) {
               if (authState is Authenticated) {
-                return HomePage(uid: authState.uid);
+                return MultiBlocProvider(providers: [
+                  BlocProvider(
+                    create: (context) => di.sl<GetSingleUserCubit>(),
+                  ),
+                  BlocProvider(
+                    create: (context) => di.sl<MyCallHistoryCubit>()
+                      ..getMyCallHistory(uid: authState.uid),
+                  ),
+                  BlocProvider(
+                    create: (context) => di.sl<UserCubit>()
+                  ),
+                  BlocProvider(
+                      create: (context) => di.sl<StatusCubit>()
+                  ),
+                ],child: HomePage(uid: authState.uid));
               }
               return LoginBodyWidget(
                 phoneController: _phoneController,

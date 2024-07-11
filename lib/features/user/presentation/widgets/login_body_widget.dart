@@ -48,7 +48,7 @@ class LoginBodyWidget extends StatelessWidget {
             GestureDetector(
               onTap: onSubmitVerifyPhoneNumber,
               child: Container(
-                margin: const EdgeInsets.only(bottom: 20),
+                margin: const EdgeInsets.only(top: 24,bottom: 20),
                 width: 120,
                 height: 40,
                 decoration: BoxDecoration(

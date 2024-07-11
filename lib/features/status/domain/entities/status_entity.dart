@@ -18,7 +18,7 @@ class StatusEntity extends Equatable {
         this.statusId,
       this.imageUrl,
       this.uid,
-      this.username,
+       this.username,
       this.profileUrl,
       this.createdAt,
       this.phoneNumber,

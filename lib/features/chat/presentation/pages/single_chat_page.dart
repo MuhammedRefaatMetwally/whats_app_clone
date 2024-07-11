@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
@@ -87,12 +88,12 @@ class _SingleChatPageState extends State<SingleChatPage> {
   void initState() {
     _soundRecorder = FlutterSoundRecorder();
     _openAudioRecording();
-   /* BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.message.recipientUid!);
+   BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.message.recipientUid!);
 
     BlocProvider.of<MessageCubit>(context).getMessages(message: MessageEntity(
       senderUid: widget.message.senderUid,
       recipientUid: widget.message.recipientUid
-    ));*/
+    ));
 
     super.initState();
   }
@@ -148,7 +149,9 @@ class _SingleChatPageState extends State<SingleChatPage> {
         if (pickedFile != null) {
           _video = File(pickedFile.path);
         } else {
-          print("no image has been selected");
+          if (kDebugMode) {
+            print("no image has been selected");
+          }
         }
       });
     } catch (e) {
@@ -616,13 +619,13 @@ class _SingleChatPageState extends State<SingleChatPage> {
                     _isShowAttachWindow == true
                         ? Positioned(
                             bottom: 65,
-                            top: 320,
+                            top: 290,
                             left: 15,
                             right: 15,
                             child: Container(
                               width: double.infinity,
-                              height: MediaQuery.of(context).size.width * 0.20,
-                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+                              height: MediaQuery.of(context).size.height * 0.30,
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 16),
                               decoration: BoxDecoration(
                                 color: bottomAttachContainerColor,
                                 borderRadius: BorderRadius.circular(10),

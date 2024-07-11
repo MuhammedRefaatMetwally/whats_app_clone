@@ -24,6 +24,7 @@ class Routes {
 
   // * My Status Page
   static const String myStatusPage = "myStatusPage";
+  static const String statusPage = "statusPage";
 
   // * Call Page
   static const String callPage = "callPage";

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:whats_app_clone/features/status/presentation/cubit/status/status_cubit.dart';
 import 'cores/app/theme/style.dart';
 import 'cores/routing/app_router.dart';
 import 'cores/routing/routes.dart';
-
+import 'package:whats_app_clone/main_injection_container.dart' as di;
 class WhatsAppClone extends StatelessWidget {
   final AppRouter appRouter;
 

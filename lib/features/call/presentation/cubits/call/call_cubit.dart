@@ -34,7 +34,6 @@ class CallCubit extends Cubit<CallState> {
 
         } else {
           emit(CallDialed(userCall: userCall.first));
-
         }
       });
     } on SocketException {

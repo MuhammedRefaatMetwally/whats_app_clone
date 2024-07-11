@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as path;
 import 'package:whats_app_clone/features/chat/presentation/cubit/chat/chat_cubit.dart';
 import 'package:whats_app_clone/features/status/presentation/cubit/get_my_status/get_my_status_cubit.dart';
+import '../../../features/call/presentation/cubits/my_call_history/my_call_history_cubit.dart';
 import '../../../features/call/presentation/pages/calls_history_page.dart';
 import '../../../features/chat/presentation/pages/chat_page.dart';
 import '../../../features/status/domain/entities/status_entity.dart';
@@ -40,8 +40,9 @@ class _HomePageState extends State<HomePage>
 
   @override
   void initState() {
-    /*BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
-    BlocProvider.of<MyCallHistoryCubit>(context).getMyCallHistory(uid: widget.uid);*/
+    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
+    BlocProvider.of<MyCallHistoryCubit>(context)
+        .getMyCallHistory(uid: widget.uid);
 
     WidgetsBinding.instance.addObserver(this);
     _tabController = TabController(length: 3, vsync: this);
@@ -88,7 +89,7 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  List<StatusImageEntity> _stories = [];
+  final List<StatusImageEntity> _stories = [];
 
   List<File>? _selectedMedia;
   List<String>? _mediaTypes; // To store the type of each selected file
@@ -228,9 +229,14 @@ class _HomePageState extends State<HomePage>
                 BlocProvider(
                     create: (context) => di.sl<ChatCubit>(),
                     child: ChatPage(uid: widget.uid)),
-                BlocProvider(
+                MultiBlocProvider(providers: [
+                  BlocProvider(
                     create: (context) => di.sl<GetMyStatusCubit>(),
-                    child: StatusPage(currentUser: currentUser)),
+                  ),
+                  BlocProvider(
+                    create: (context) => di.sl<StatusCubit>(),
+                  ),
+                ], child: StatusPage(currentUser: currentUser)),
                 CallHistoryPage(
                   currentUser: currentUser,
                 ),
@@ -342,13 +348,9 @@ class _HomePageState extends State<HomePage>
                   status: StatusEntity(
                       statusId: myStatus.first.statusId, stories: _stories))
               .then((value) {
-            Navigator.pushReplacement(
+            Navigator.pushReplacementNamed(
                 context,
-                MaterialPageRoute(
-                    builder: (_) => HomePage(
-                          uid: widget.uid,
-                          index: 1,
-                        )));
+                Routes.homePage,arguments: widget.uid);
           });
         } else {
           BlocProvider.of<StatusCubit>(context)
@@ -364,13 +366,9 @@ class _HomePageState extends State<HomePage>
                 phoneNumber: currentUser.phoneNumber),
           )
               .then((value) {
-            Navigator.pushReplacement(
+            Navigator.pushReplacementNamed(
                 context,
-                MaterialPageRoute(
-                    builder: (_) => HomePage(
-                          uid: widget.uid,
-                          index: 1,
-                        )));
+                Routes.homePage,arguments: widget.uid);
           });
         }
       });

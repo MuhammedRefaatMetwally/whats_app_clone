@@ -1,7 +1,7 @@
 
 class AgoraConfig {
 
-  static const String agoraAppId = "7f97c3fcda294c3c989307de9873e5d3";
-  static const String agoraAppCertificate = "b46cdfd923c14cf3849ca740d1b3315b";
+  static const String agoraAppId = "1cd7e5ed4541441896d192945f6b5a82";
+  static const String agoraAppCertificate = "f6e835eacfc246f1b0ac9909bd2766c6";
 
 }

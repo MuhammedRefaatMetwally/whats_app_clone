@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:whats_app_clone/cores/routing/routes.dart';
 
 import '../../../../cores/app/const/app_const.dart';
 import '../../../../cores/app/global/widgets/profile_widget.dart';

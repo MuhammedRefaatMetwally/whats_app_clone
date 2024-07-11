@@ -1,4 +1,5 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whats_app_clone/cores/app/global/widgets/profile_widget.dart';
@@ -35,7 +36,6 @@ class _PickUpCallPageState extends State<PickUpCallPage> {
       builder: (context, callState) {
         if(callState is CallDialed) {
           final call = callState.userCall;
-
           if(call.isCallDialed == false) {
             return Scaffold(
               body: Column(
@@ -49,9 +49,9 @@ class _PickUpCallPageState extends State<PickUpCallPage> {
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   ProfileWidget(imageUrl: call.receiverProfileUrl),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   Text(
                     "${call.receiverName}",
                     style: const TextStyle(
@@ -98,7 +98,9 @@ class _PickUpCallPageState extends State<PickUpCallPage> {
                                 receiverId: call.receiverId!
                             ));
 
-                            print("callChannelId = $callChannelId");
+                            if (kDebugMode) {
+                              print("callChannelId = $callChannelId");
+                            }
                           });
                         },
                         icon: const Icon(

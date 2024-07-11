@@ -6,13 +6,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_story_view/flutter_story_view.dart';
 import 'package:flutter_story_view/models/story_item.dart';
 import 'package:path/path.dart' as path;
-import 'package:whats_app_clone/cores/app/global/widgets/profile_widget.dart';
+import 'package:whats_app_clone/features/call/presentation/cubits/my_call_history/my_call_history_cubit.dart';
+import 'package:whats_app_clone/features/status/presentation/widgets/statusPageBody.dart';
+import 'package:whats_app_clone/features/user/presentation/cubit/get_single_user/get_single_user_cubit.dart';
+import 'package:whats_app_clone/features/user/presentation/cubit/user/user_cubit.dart';
 import 'package:whats_app_clone/main_injection_container.dart' as di;
-import '../../../../cores/app/global/date/date_formats.dart';
 import '../../../../cores/app/global/widgets/show_image_and_video_widget.dart';
 import '../../../../cores/app/home/home_page.dart';
 import '../../../../cores/app/theme/style.dart';
-import '../../../../cores/routing/routes.dart';
 import '../../../../cores/storage/storage_provider.dart';
 import '../../../user/domain/entities/user_entity.dart';
 import '../../domain/entities/status_entity.dart';
@@ -20,10 +21,10 @@ import '../../domain/entities/status_image_entity.dart';
 import '../../domain/usecases/get_my_status_future_usecase.dart';
 import '../cubit/get_my_status/get_my_status_cubit.dart';
 import '../cubit/status/status_cubit.dart';
-import '../widgets/status_dotted_borders_widget.dart';
 
 class StatusPage extends StatefulWidget {
   final UserEntity currentUser;
+
   const StatusPage({super.key, required this.currentUser});
 
   @override
@@ -83,7 +84,8 @@ class _StatusPageState extends State<StatusPage> {
   void initState() {
     super.initState();
 
-    BlocProvider.of<StatusCubit>(context).getStatuses(status: const StatusEntity());
+    BlocProvider.of<StatusCubit>(context).getStatuses(
+        status: const StatusEntity());
 
     BlocProvider.of<GetMyStatusCubit>(context).getMyStatus(
         uid: widget.currentUser.uid!);
@@ -96,9 +98,6 @@ class _StatusPageState extends State<StatusPage> {
         }
       });
     });
-
-
-
   }
 
   Future _fillMyStoriesList(StatusEntity status) async {
@@ -119,27 +118,37 @@ class _StatusPageState extends State<StatusPage> {
   @override
   Widget build(BuildContext context) {
     print("build");
-    return  BlocBuilder<StatusCubit, StatusState>(
+    return BlocBuilder<StatusCubit, StatusState>(
       builder: (context, state) {
         if (state is StatusLoaded) {
-          final statuses = state.statuses.where((element) => element.uid != widget.currentUser.uid).toList();
+          final statuses = state.statuses.where((element) =>
+          element.uid != widget.currentUser.uid).toList();
           print("statuses loaded $statuses");
 
           return BlocBuilder<GetMyStatusCubit, GetMyStatusState>(
             builder: (context, state) {
-              if(state is GetMyStatusLoaded) {
+              if (state is GetMyStatusLoaded) {
                 print("loaded my status ${state.myStatus}");
-                return _bodyWidget(statuses, widget.currentUser, myStatus: state.myStatus);
+                return BlocProvider(
+                  create: (context) =>  di.sl<GetSingleUserCubit>(),
+                  child: StatusPageBody(statuses: statuses,
+                        currentUser:  widget.currentUser,
+                        myStatus: state.myStatus,
+                        onShowStatusImageViewBottomModalSheet: _showStatusImageViewBottomModalSheet,
+                        onEitherShowOrUploadSheet: _eitherShowOrUploadSheet),
+                );
               }
 
               return const Center(
-                child: CircularProgressIndicator(
-                  color: tabColor,
-                ),
+              child: CircularProgressIndicator(
+              color:
+              tabColor
+              ,
+              )
+              ,
               );
             },
           );
-
         }
 
         return const Center(
@@ -150,217 +159,40 @@ class _StatusPageState extends State<StatusPage> {
       },
     );
   }
-  _bodyWidget(List<StatusEntity> statuses, UserEntity currentUser, {StatusEntity? myStatus}) {
-    return Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Stack(
-                    children: [
-                      myStatus != null
-                          ? GestureDetector(
-                        onTap: () {
-                          _eitherShowOrUploadSheet(myStatus, currentUser);
-                        },
-                        child: Container(
-                          width: 55,
-                          height: 55,
-                          margin: const EdgeInsets.all(12.5),
-                          child: CustomPaint(
-                            painter: StatusDottedBordersWidget(
-                                isMe: true,
-                                numberOfStories: myStatus.stories!.length,
-                                spaceLength: 4,
-                                images: myStatus.stories!,
-                                uid: widget.currentUser.uid
-                            ),
-                            child: Container(
-                              margin: const EdgeInsets.all(3),
-                              width: 55,
-                              height: 55,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: ProfileWidget(imageUrl: myStatus.imageUrl),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        width: 60,
-                        height: 60,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(30),
-                          child: ProfileWidget(imageUrl: currentUser.profileUrl),
-                        ),
-                      ),
 
+  Future<void> _showStatusImageViewBottomModalSheet(
+      StatusEntity status,  List<StoryItem> stories,) async {
 
-                      myStatus != null
-                          ? Container()
-                          : Positioned(
-                        right: 10,
-                        bottom: 8,
-                        child: GestureDetector(
-                          onTap: () {
-                            _eitherShowOrUploadSheet(myStatus, currentUser);
-                          },
-                          child: Container(
-                            width: 25,
-                            height: 25,
-                            decoration: BoxDecoration(
-                                color: tabColor,
-                                borderRadius: BorderRadius.circular(25),
-                                border: Border.all(width: 2, color: backgroundColor)),
-                            child: const Center(
-                              child: Icon(
-                                Icons.add,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "My status",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(
-                            height: 2,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              _eitherShowOrUploadSheet(myStatus, currentUser);
-
-                            },
-                            child: const Text(
-                              "Tap to add your status update",
-                              style: TextStyle(color: greyColor),
-                            ),
-                          )
-                        ],
-                      )),
-
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, Routes.myStatusPage, arguments: myStatus);
-                    },
-                    child: Icon(
-                      Icons.more_horiz,
-                      color: greyColor.withOpacity(.5),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Padding(
-                padding: EdgeInsets.only(left: 10.0),
-                child: Text(
-                  "Recent updates",
-                  style: TextStyle(
-                      fontSize: 15, color: greyColor, fontWeight: FontWeight.w500),
-                ),
-              ),
-
-              const SizedBox(height: 10,),
-
-              ListView.builder(
-                  itemCount: statuses.length,
-                  shrinkWrap: true,
-                  physics: const ScrollPhysics(),
-                  itemBuilder: (context, index) {
-
-                    final status = statuses[index];
-
-                    List<StoryItem> stories = [];
-
-                    for (StatusImageEntity storyItem in status.stories!) {
-                      stories.add(StoryItem(url: storyItem.url!,
-                          viewers: storyItem.viewers,
-                          type: StoryItemTypeExtension.fromString(storyItem.type!)));
-                    }
-
-
-                    return ListTile(
-                      onTap: () {
-                        _showStatusImageViewBottomModalSheet(status: status, stories: stories);
-                      },
-                      leading: SizedBox(
-                        width: 55,
-                        height: 55,
-                        child: CustomPaint(
-                          painter: StatusDottedBordersWidget(
-                              isMe: false,
-                              numberOfStories: status.stories!.length,
-                              spaceLength: 4,
-                              images: status.stories,
-                              uid: widget.currentUser.uid
-                          ),
-                          child: Container(
-                            margin: const EdgeInsets.all(3),
-                            width: 55,
-                            height: 55,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: ProfileWidget(imageUrl: status.imageUrl),
-                            ),
-                          ),
-                        ),
-                      ),
-                      title: Text(
-                        "${status.username}",
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      subtitle: Text(formatDateTime(status.createdAt!.toDate())),
-                    );
-                  })
-            ],
-          ),
-        ));
-  }
-
-  Future _showStatusImageViewBottomModalSheet({StatusEntity? status, required List<StoryItem> stories}) async {
-
-    print("storieas $stories");
+    print("stories $stories");
     showModalBottomSheet(
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
       context: context,
-      builder: (context) {
-        return FlutterStoryView(
-          onComplete: () {
-            Navigator.pop(context);
-          },
-          storyItems: stories,
-          enableOnHoldHide: false,
-          caption: "This is very beautiful photo",
-          onPageChanged: (index) {
-            BlocProvider.of<StatusCubit>(context)
-                .seenStatusUpdate(imageIndex: index, userId: widget.currentUser.uid!, statusId: status.statusId!);
-          },
-          createdAt: status!.createdAt!.toDate(),
+      builder: (_) {
+        return BlocProvider.value(
+          value: di.sl<StatusCubit>(),
+          child: FlutterStoryView(
+            onComplete: () {
+              Navigator.pop(context);
+            },
+            storyItems: stories,
+            enableOnHoldHide: false,
+            caption: "This is very beautiful photo",
+            onPageChanged: (index) {
+              BlocProvider.of<StatusCubit>(context)
+                  .seenStatusUpdate(imageIndex: index,
+                  userId: widget.currentUser.uid!,
+                  statusId: status.statusId!);
+            },
+            createdAt: status.createdAt!.toDate(),
+          ),
         );
       },
     );
   }
 
-  _uploadImageStatus(UserEntity currentUser) {
+  void _uploadImageStatus(UserEntity currentUser) {
     StorageProviderRemoteDataSource.uploadStatuses(
         files: _selectedMedia!,
         onComplete: (onCompleteStatusUpload) {})
@@ -373,18 +205,27 @@ class _StatusPageState extends State<StatusPage> {
         ));
       }
 
-      di.sl<GetMyStatusFutureUseCase>().call(widget.currentUser.uid!).then((myStatus) {
+      di.sl<GetMyStatusFutureUseCase>().call(widget.currentUser.uid!).then((
+          myStatus) {
         if (myStatus.isNotEmpty) {
           BlocProvider.of<StatusCubit>(context)
-              .updateOnlyImageStatus(status: StatusEntity(statusId: myStatus.first.statusId, stories: _stories))
+              .updateOnlyImageStatus(status: StatusEntity(
+              statusId: myStatus.first.statusId, stories: _stories))
               .then((value) {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (_) => HomePage(
-                      uid: widget.currentUser.uid!,
-                      index: 1,
-                    )));
+                    builder: (_) =>
+                        MultiBlocProvider(providers: [
+                          BlocProvider(create: (context) => di.sl<GetSingleUserCubit>(),),
+                          BlocProvider( create: (context) => di.sl<MyCallHistoryCubit>(),),
+                          BlocProvider( create: (context) => di.sl<UserCubit>(),),
+                        ],
+                          child: HomePage(
+                            uid: widget.currentUser.uid!,
+                            index: 1,
+                          ),
+                        )));
           });
         } else {
           BlocProvider.of<StatusCubit>(context)
@@ -403,10 +244,17 @@ class _StatusPageState extends State<StatusPage> {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (_) => HomePage(
-                      uid: widget.currentUser.uid!,
-                      index: 1,
-                    )));
+                    builder: (_) =>
+                        MultiBlocProvider(providers: [
+                          BlocProvider(create: (context) => di.sl<GetSingleUserCubit>(),),
+                          BlocProvider( create: (context) => di.sl<MyCallHistoryCubit>(),),
+                          BlocProvider( create: (context) => di.sl<UserCubit>(),),
+                        ],
+                          child: HomePage(
+                            uid: widget.currentUser.uid!,
+                            index: 1,
+                          ),
+                        )));
           });
         }
       });
@@ -414,9 +262,11 @@ class _StatusPageState extends State<StatusPage> {
   }
 
 
-  void _eitherShowOrUploadSheet(StatusEntity? myStatus, UserEntity currentUser) {
+  void _eitherShowOrUploadSheet(StatusEntity? myStatus,
+      UserEntity? currentUser) {
     if (myStatus != null) {
-      _showStatusImageViewBottomModalSheet(status: myStatus, stories: myStories);
+      _showStatusImageViewBottomModalSheet(
+          myStatus, myStories);
     } else {
       selectMedia().then(
             (value) {
@@ -430,7 +280,7 @@ class _StatusPageState extends State<StatusPage> {
                 return ShowMultiImageAndVideoPickedWidget(
                   selectedFiles: _selectedMedia!,
                   onTap: () {
-                    _uploadImageStatus(currentUser);
+                    _uploadImageStatus(currentUser??UserEntity());
                     Navigator.pop(context);
                   },
                 );

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whats_app_clone/cores/routing/routes.dart';
+import 'package:whats_app_clone/features/call/presentation/cubits/agora/agora_cubit.dart';
+import 'package:whats_app_clone/features/call/presentation/cubits/call/call_cubit.dart';
 import 'package:whats_app_clone/features/chat/presentation/cubit/chat/chat_cubit.dart';
 import 'package:whats_app_clone/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:whats_app_clone/features/chat/presentation/pages/chat_page.dart';
+import 'package:whats_app_clone/features/status/presentation/pages/status_page.dart';
 import '../../features/call/domain/entities/call_entity.dart';
 import '../../features/call/presentation/cubits/my_call_history/my_call_history_cubit.dart';
 import '../../features/call/presentation/pages/call_contacts_page.dart';
@@ -44,8 +47,11 @@ class AppRouter {
       case Routes.loginPage:
         {
           return MaterialPageRoute(
-              builder: (_) => BlocProvider(
-                  create: (BuildContext context) => di.sl<CredentialCubit>(),
+              builder: (_) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(create: (context) => di.sl<CredentialCubit>(),),
+                  BlocProvider(create: (context) => di.sl<AuthCubit>(),),
+                ],
                   child: const LoginPage()));
         }
 
@@ -72,9 +78,14 @@ class AppRouter {
       case Routes.settingsPage:
         {
           if (arguments is String) {
-            return materialPageBuilder(BlocProvider(
-                create: (context) =>
-                    di.sl<GetSingleUserCubit>()..getSingleUser(uid: arguments),
+            return materialPageBuilder(MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (context) =>
+                di.sl<GetSingleUserCubit>()..getSingleUser(uid: arguments),),
+                BlocProvider(create: (context) =>
+                di.sl<AuthCubit>()),
+              ],
+
                 child: SettingsPage(uid: arguments)));
           } else {
             return materialPageBuilder(const ErrorPage());
@@ -95,7 +106,10 @@ class AppRouter {
       case Routes.callPage:
         {
           if (arguments is CallEntity) {
-            return materialPageBuilder(CallPage(callEntity: arguments));
+            return materialPageBuilder(MultiBlocProvider(providers: [
+              BlocProvider(create: (context) => di.sl<AgoraCubit>()),
+              BlocProvider(create: (context) => di.sl<CallCubit>()),
+            ], child: CallPage(callEntity: arguments)));
           } else {
             return materialPageBuilder(const ErrorPage());
           }
@@ -111,6 +125,12 @@ class AppRouter {
               BlocProvider(
                 create: (context) =>
                     di.sl<MessageCubit>()..getMessages(message: arguments),
+              ),
+              BlocProvider(
+                create: (context) => di.sl<CallCubit>(),
+              ),
+              BlocProvider(
+                create: (context) => di.sl<AgoraCubit>(),
               ),
             ], child: SingleChatPage(message: arguments)));
           } else {
@@ -132,13 +152,16 @@ class AppRouter {
           }
         }
 
-      case Routes.myStatusPage: {
-        if(arguments is StatusEntity) {
-          return materialPageBuilder( MyStatusPage(status: arguments));
-        } else {
-          return materialPageBuilder( const ErrorPage());
+      case Routes.myStatusPage:
+        {
+          if (arguments is StatusEntity) {
+            return materialPageBuilder(BlocProvider(create:
+                (context) => di.sl<StatusCubit>()
+                ,child: MyStatusPage(status: arguments)));
+          } else {
+            return materialPageBuilder(const ErrorPage());
+          }
         }
-      }
 
       default:
         return null;
@@ -162,10 +185,13 @@ class AuthWrapper extends StatelessWidget {
             BlocProvider(
               create: (context) => di.sl<MyCallHistoryCubit>()
                 ..getMyCallHistory(uid: authState.uid),
-            ),BlocProvider(
-              create: (context) => di.sl<StatusCubit>(),
             ),
-
+            BlocProvider(
+                create: (context) => di.sl<UserCubit>()
+            ),
+            BlocProvider(
+                create: (context) => di.sl<StatusCubit>()
+            ),
           ], child: HomePage(uid: authState.uid));
         }
         return SplashScreen();

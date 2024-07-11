@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 import 'package:whats_app_clone/cores/app/global/widgets/profile_widget.dart';
+import 'package:whats_app_clone/cores/routing/routes.dart';
 import '../../../../cores/app/home/home_page.dart';
 import '../../../../cores/app/theme/style.dart';
 import '../../domain/entities/status_entity.dart';
@@ -51,7 +52,7 @@ class MyStatusPage extends StatelessWidget {
                   color: appBarColor,
                   iconSize: 28,
                   onSelected: (value) {},
-                  itemBuilder: (context) => <PopupMenuEntry<String>>[
+                  itemBuilder: (_) => <PopupMenuEntry<String>>[
                     PopupMenuItem<String>(
                       value: "Delete",
                       child: GestureDetector(onTap: () {
@@ -62,8 +63,9 @@ class MyStatusPage extends StatelessWidget {
                                   statusId: status.statusId
                               )
                           );
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage(uid: status.uid!, index: 1,)));
-                        });
+                          Navigator.pushReplacementNamed(context,
+                              Routes.welcomePage,arguments: status.uid);
+                          });
                       },
                       child: const Text('Delete'),),),
                   ],
